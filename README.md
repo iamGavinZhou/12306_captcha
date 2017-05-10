@@ -11,7 +11,7 @@ Very simple but effective!
 > - caffe
 
 # How to use
-> 1. using Biadu image for captcha break
+> 1. using Baidu image for captcha break
 > - **python baidu_12306.py**
 > 2. using ResNet for captcha break
 > - **python res_recog_v5.py**
@@ -19,12 +19,7 @@ Very simple but effective!
 > - **python util.py**
 
 # Results
-**test data**: 100 images in `data/test_data`
-
-**success rate**: 41/100=0.41
-
-**time**: 0.695 s
+**test data**: 100 images in `data/test_data`</br>**success rate**: 41/100=0.41</br>**time**: 0.695 s
 
 # Other
-Is still on build, maybe some bugs exist!
-feel free to contact me, **gavinzhou_xd@163.com**, any question is welcomed!
+Is still on build, maybe some bugs exist!</br>feel free to contact me, **gavinzhou_xd@163.com**, any question is welcomed!
