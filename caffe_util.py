@@ -6,7 +6,6 @@ sys.path.insert(0, '/home/common/caffe/python')
 import caffe
 import skimage.io
 import numpy as  np
-import tensorflow as tf
 from caffe.proto import caffe_pb2
 from synset import *
 
@@ -49,7 +48,7 @@ def load_image(path, size=224):
 	return resized_img
 
 
-def init_net(layers, using_gpu=True):
+def init_net(layers, batch_size, height=224, width=224, using_gpu=True):
 	"""init ResNet"""
 	if using_gpu:
 		caffe.set_mode_gpu()
@@ -58,6 +57,7 @@ def init_net(layers, using_gpu=True):
 	prototxt = "data/Res_model/ResNet-%d-deploy.prototxt" % layers
 	caffemodel = "data/Res_model/ResNet-%d-model.caffemodel" % layers
 	net = caffe.Net(prototxt, caffemodel, caffe.TEST)
+	net.blobs['data'].reshape(batch_size, 3, height, width)  # set batch size and image size
 
 	return net
 
@@ -81,6 +81,31 @@ def load_caffe(img_p, layers=101, using_gpu=True):
 	print_prob(caffe_prob)
 
 	return net
+
+
+def load_caffe_batch(img_batch, net, layers=101, using_gpu=True):
+	"""classify a batch of data"""
+	net.blobs['data'].data[...] = img_batch
+	assert net.blobs['data'].data.shape[1:] == (3, 224, 224)
+	net.forward()
+
+	caffe_prob = net.blobs['prob'].data
+	print caffe_prob.shape
+	for x in range(0, caffe_prob.shape[0]):
+		caffe_prob_t = caffe_prob[x]
+		print_prob(caffe_prob_t)
+		print '----------------------------'
+
+
+def load_caffe_fc_batch(img_batch, net, layers=101, using_gpu=True):
+	"""extrcat feature on fc layer with a batch of data"""
+	net.blobs['data'].data[...] = img_batch
+	assert net.blobs['data'].data.shape[1:] == (3, 224, 224)
+	net.forward()
+
+	caffe_fcb = net.blobs['fc1000'].data
+	print 'type of fcb: %s' % type(caffe_fcb)
+	print caffe_fcb.shape
 
 
 def load_caffe_fc(img_p, layers=101, using_gpu=True):
@@ -146,8 +171,42 @@ def test_ini(layers=101, using_gpu=True):
 		print_prob(caffe_prob)
 
 
+def test_batch(path_list, layers=101, using_gpu=True):
+	"""test on a batch data"""
+	net = init_net(batch_size=2, layers=101, using_gpu=using_gpu)
+	all_imgs = len(path_list)
+	data = np.zeros((all_imgs, 3, 224, 224), dtype=np.float32)
+	index = 0
+	for path in path_list:
+		im = load_image(path)
+		im_p = preprocess(im)
+		im_p_t = im_p.transpose((2, 0, 1))
+		data[index] = im_p_t
+		index += 1
+	load_caffe_batch(data, net) 
+
+
+def test_batch_fc(path_list, layers=101, using_gpu=True):
+	"""test on a batch data"""
+	net = init_net(batch_size=2, layers=101, using_gpu=using_gpu)
+	all_imgs = len(path_list)
+	data = np.zeros((all_imgs, 3, 224, 224), dtype=np.float32)
+	index = 0
+	for path in path_list:
+		im = load_image(path)
+		im_p = preprocess(im)
+		im_p_t = im_p.transpose((2, 0, 1))
+		data[index] = im_p_t
+		index += 1
+	load_caffe_fc_batch(data, net) 
+
+
 if __name__ == '__main__':
 	import time
 	start = time.clock()
-	test_ini()
-	print (time.clock() - start)
+	path_list = []
+	for file_name in os.listdir('data/test_img_data'):
+		path = os.path.join('data/test_img_data', file_name)
+		path_list.append(path)
+	test_batch_fc(path_list)
+	print time.clock() - start
