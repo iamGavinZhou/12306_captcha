@@ -39,7 +39,7 @@ def rebuild():
 	"""
 	import shutil
 	CAT_DIR = 'data/train_data/'
-	SAVE_DIR = 'data/DB'
+	SAVE_DIR = 'data/DB2'
 	if not os.path.exists(SAVE_DIR):
 		os.makedirs(SAVE_DIR)
 	label_f = pd.read_table('data/label.txt', names=['data'])
@@ -92,7 +92,7 @@ def get_success_rate():
 		return True
 
 	right_count = 0
-	recog_table = pd.read_table('data/test_recog.txt', sep=':', names=['index', 'data'])
+	recog_table = pd.read_table('data/test_recog_K10_v5.txt', sep=':', names=['index', 'data'])
 	ans_table = pd.read_table('data/test_ans.txt', sep=':', names=['index', 'data'])
 	assert recog_table['index'].shape[0] == ans_table['index'].shape[0]
 	all_count = ans_table['index'].shape[0]
