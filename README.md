@@ -12,15 +12,17 @@ Very simple but effective!
 
 # How to use
 > 1. using Biadu image for captcha break
->     **python baidu_12306.py**
+> - **python baidu_12306.py**
 > 2. using ResNet for captcha break
->     **python res_recog_v5.py**
+> - **python res_recog_v5.py**
 > 3. get success rate
->     **python util.py**
+> - **python util.py**
 
 # Results
 **test data**: 100 images in `data/test_data`
+
 **success rate**: 41/100=0.41
+
 **time**: 0.695 s
 
 # Other
